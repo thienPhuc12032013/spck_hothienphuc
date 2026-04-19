@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI";}
+
+body{
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+}
+
+/* BG */
+.bg{position:absolute;inset:0;}
+.slide{
+  position:absolute;width:100%;height:100%;
+  background-size:cover;background-position:center;
+  opacity:0;transition:1.2s;
+  filter: blur(5px) brightness(0.45);
+  transform: scale(1.1);
+}
+.active{opacity:1;}
+
+.overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.6);
+}
+
+/* BOX */
+.box{
+  width:360px;padding:32px;border-radius:20px;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);
+  color:white;text-align:center;z-index:2;
+  animation:fadeUp .7s ease;
+}
+
+@keyframes fadeUp{
+  from{transform:translateY(40px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+
+/* LOGO */
+.logo{font-size:34px;font-weight:800;}
+.logo span{color:#ff0050;}
+
+.sub{font-size:13px;color:#aaa;margin:10px 0 20px;}
+
+.error{
+  color:#ff4d6d;font-size:12px;margin-bottom:10px;display:none;
+}
+
+/* INPUT */
+.input-group{position:relative;margin-bottom:14px;}
+.input-group i{
+  position:absolute;left:12px;top:50%;
+  transform:translateY(-50%);color:#888;
+}
+
+.input-group input{
+  width:100%;padding:12px 38px;border-radius:12px;
+  border:1px solid #222;background:#111;color:white;
+  transition:.3s;
+}
+
+.input-group input:focus{
+  border-color:#ff0050;
+  box-shadow:0 0 10px rgba(255,0,80,0.4);
+}
+
+.show-pass{
+  position:absolute;right:12px;top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;color:#888;
+}
+
+/* BTN */
+.btn{
+  width:100%;padding:12px;border:none;
+  border-radius:12px;color:white;font-weight:bold;
+  cursor:pointer;
+  background:linear-gradient(270deg,#ff0050,#ff4d6d,#ff0050);
+  background-size:200% 200%;
+  animation:move 3s infinite;
+  transition:.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 20px rgba(255,0,80,0.5);
+}
+
+.btn.loading{
+  opacity:0.7;
+  pointer-events:none;
+}
+
+@keyframes move{
+  0%{background-position:0%}
+  50%{background-position:100%}
+  100%{background-position:0%}
+}
+
+/* REMEMBER */
+.remember{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin-bottom:10px;
+  color:#aaa;
+}
+
+/* LINK */
+.link{margin-top:14px;font-size:12px;color:#aaa;}
+.link a{color:#ff0050;text-decoration:none;}
+</style>
+</head>
+
+<body>
+
+<div class="bg">
+  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1520975693411-b5d1b8c4b9c8');"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475');"></div>
+</div>
+
+<div class="overlay"></div>
+
+<div class="box">
+  <div class="logo">Log<span>in</span></div>
+  <div class="sub">Đăng nhập để tiếp tục</div>
+
+  <div class="error" id="errorText"></div>
+
+  <div class="input-group">
+    <i class="fa fa-user"></i>
+    <input id="user" placeholder="Username">
+  </div>
+
+  <div class="input-group">
+    <i class="fa fa-lock"></i>
+    <input id="pass" type="password" placeholder="Mật khẩu">
+    <i class="fa fa-eye show-pass" onclick="togglePass()"></i>
+  </div>
+
+  <div class="remember">
+    <label><input type="checkbox" id="remember"> Ghi nhớ</label>
+    <span style="cursor:pointer">Quên mật khẩu?</span>
+  </div>
+
+  <button class="btn" id="loginBtn" onclick="login()">Đăng nhập</button>
+
+  <div class="link">
+    Chưa có tài khoản? <a href="register.html">Đăng ký</a>
+  </div>
+</div>
+
+<script>
+// BG
+let slides=document.querySelectorAll(".slide");
+let i=0;
+setInterval(()=>{
+  slides[i].classList.remove("active");
+  i=(i+1)%slides.length;
+  slides[i].classList.add("active");
+},4000);
+
+// ENTER LOGIN
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter") login();
+});
+
+// PASS
+function togglePass(){
+  let p=pass;
+  let icon=document.querySelector(".show-pass");
+
+  if(p.type==="password"){
+    p.type="text";
+    icon.classList.replace("fa-eye","fa-eye-slash");
+  }else{
+    p.type="password";
+    icon.classList.replace("fa-eye-slash","fa-eye");
+  }
+}
+
+// AUTO FILL
+window.onload=()=>{
+  let u=localStorage.getItem("user");
+  if(u) user.value=u;
+
+  if(localStorage.getItem("remember")){
+    remember.checked=true;
+  }
+}
+
+// LOGIN
+function login(){
+  let u=user.value.trim();
+  let p=pass.value.trim();
+  let error=errorText;
+  let btn=loginBtn;
+
+  let savedUser=localStorage.getItem("user");
+  let savedPass=localStorage.getItem("pass");
+
+  error.style.display="none";
+
+  if(!u || !p){
+    error.innerText="⚠️ Nhập đầy đủ!";
+    error.style.display="block";
+    return;
+  }
+
+  btn.classList.add("loading");
+
+  setTimeout(()=>{
+    btn.classList.remove("loading");
+
+    if(u===savedUser && p===savedPass){
+
+      if(remember.checked){
+        localStorage.setItem("remember",true);
+      }else{
+        localStorage.removeItem("remember");
+      }
+
+      localStorage.setItem("login",true);
+
+      alert("✅ Đăng nhập thành công!");
+      
+      // chuyển trang (tự tạo thêm home.html nếu muốn)
+      // window.location.href="home.html";
+
+    }else{
+      error.innerText="❌ Sai tài khoản!";
+      error.style.display="block";
+    }
+
+  },1200);
+}
+</script>
+
+</body>
+</html>
