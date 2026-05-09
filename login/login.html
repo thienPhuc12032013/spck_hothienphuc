@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Login</title>
 
 <link rel="stylesheet" href="login.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
@@ -14,101 +17,68 @@
 
 <!-- BG -->
 <div class="bg">
-  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1520975693411-b5d1b8c4b9c8');"></div>
-  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475');"></div>
+
+  <div class="slide active"
+  style="background-image:url('https://images.unsplash.com/photo-1520975693411-b5d1b8c4b9c8');">
+  </div>
+
+  <div class="slide"
+  style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475');">
+  </div>
+
 </div>
 
+<!-- OVERLAY -->
 <div class="overlay"></div>
 
 <!-- BOX -->
 <div class="box">
-  <div class="logo">Log<span>in</span></div>
-  <div class="sub">Đăng nhập để tiếp tục</div>
 
+  <div class="logo">
+    Log<span>in</span>
+  </div>
+
+  <div class="sub">
+    Đăng nhập để tiếp tục
+  </div>
+
+  <!-- ERROR -->
   <div class="error" id="errorText"></div>
 
+  <!-- USER -->
   <div class="input-group">
-    <input id="user" placeholder="Username">
+    <input id="user" type="text" placeholder="Username">
     <i class="fa fa-user left-icon"></i>
   </div>
 
+  <!-- PASS -->
   <div class="input-group">
-    <input id="pass" type="password" placeholder="Mật khẩu">
+
+    <input id="pass"
+    type="password"
+    placeholder="Mật khẩu">
+
     <i class="fa fa-lock left-icon"></i>
-    <i class="fa fa-eye show-pass" onclick="togglePass()"></i>
+
+    <i class="fa fa-eye show-pass"
+    onclick="togglePass()"></i>
+
   </div>
 
-  <button class="btn" onclick="login()">Đăng nhập</button>
+  <!-- BTN -->
+  <button class="btn" onclick="login()">
+    Đăng nhập
+  </button>
 
+  <!-- LINK -->
   <div class="link">
-    Chưa có tài khoản? <a href="register.html">Đăng ký</a>
+    Chưa có tài khoản?
+    <a href="register.html">Đăng ký</a>
   </div>
+
 </div>
 
-<script>
-
-// BG
-let slides=document.querySelectorAll(".slide");
-let i=0;
-setInterval(()=>{
-  slides[i].classList.remove("active");
-  i=(i+1)%slides.length;
-  slides[i].classList.add("active");
-},4000);
-
-// SHOW PASS
-function togglePass(){
-  let p=document.getElementById("pass");
-  let icon=document.querySelector(".show-pass");
-
-  if(p.type==="password"){
-    p.type="text";
-    icon.classList.replace("fa-eye","fa-eye-slash");
-  }else{
-    p.type="password";
-    icon.classList.replace("fa-eye-slash","fa-eye");
-  }
-}
-
-// LOGIN
-function login(){
-
-  let u=user.value.trim();
-  let p=pass.value.trim();
-
-  let savedUser = localStorage.getItem("user");
-  let savedPass = localStorage.getItem("pass");
-
-  let error = document.getElementById("errorText");
-
-  error.style.display="none";
-
-  if(!u || !p){
-    error.innerText="⚠️ Nhập đầy đủ thông tin!";
-    error.style.display="block";
-    return;
-  }
-
-  if(!savedUser || !savedPass){
-    error.innerText="⚠️ Chưa có tài khoản!";
-    error.style.display="block";
-    return;
-  }
-
-  if(u !== savedUser || p !== savedPass){
-    error.innerText="❌ Sai tài khoản hoặc mật khẩu!";
-    error.style.display="block";
-    return;
-  }
-
-  localStorage.setItem("isLogin","true");
-  localStorage.setItem("currentUser",u);
-
-  alert("Đăng nhập thành công!");
-  window.location.href="main.html";
-}
-
-</script>
+<script src="login.js"></script>
 
 </body>
 </html>
