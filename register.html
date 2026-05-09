@@ -5,110 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register</title>
 
+<link rel="stylesheet" href="register.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI";}
-
-body{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#000;
-  overflow:hidden;
-}
-
-/* BG */
-.bg{position:absolute;inset:0;}
-.slide{
-  position:absolute;width:100%;height:100%;
-  background-size:cover;background-position:center;
-  opacity:0;transition:1.2s;
-  filter:blur(5px) brightness(0.45);
-  transform:scale(1.1);
-}
-.active{opacity:1;}
-
-.overlay{
-  position:absolute;inset:0;
-  background:rgba(0,0,0,0.6);
-}
-
-/* BOX */
-.box{
-  width:360px;
-  padding:32px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.65);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,0.08);
-  color:white;
-  text-align:center;
-  z-index:2;
-}
-
-.logo{font-size:32px;font-weight:800;}
-.logo span{color:#ff0050;}
-
-.sub{font-size:13px;color:#aaa;margin:10px 0 20px;}
-
-.error{color:#ff4d6d;font-size:12px;margin-bottom:10px;display:none;}
-.success{color:#00ffae;font-size:12px;margin-bottom:10px;display:none;}
-
-/* INPUT */
-.input-group{
-  position:relative;
-  margin-bottom:14px;
-}
-
-.input-group input{
-  width:100%;
-  padding:12px 40px 12px 12px;
-  border-radius:12px;
-  border:1px solid #222;
-  background:#111;
-  color:white;
-}
-
-/* ICON */
-.right-icon{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#888;
-}
-
-/* BUTTON */
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-.btn-reg{
-  background:linear-gradient(270deg,#ff0050,#ff4d6d,#ff0050);
-  background-size:200% 200%;
-  animation:move 3s infinite;
-}
-
-.btn-login{
-  background:#38bdf8;
-  color:black;
-}
-
-@keyframes move{
-  0%{background-position:0%}
-  50%{background-position:100%}
-  100%{background-position:0%}
-}
-</style>
 </head>
 
 <body>
@@ -147,17 +46,14 @@ body{
     <i class="fa fa-lock right-icon"></i>
   </div>
 
-  <!-- 🔥 BUTTON CŨ -->
   <button class="btn btn-reg" onclick="register()">Đăng ký</button>
-
-  <!-- 🔥 BUTTON MỚI (CHUYỂN TRANG) -->
   <button class="btn btn-login" onclick="goLogin()">Đi tới Login</button>
 
 </div>
 
 <script>
 
-/* BG */
+// BG
 let slides=document.querySelectorAll(".slide");
 let i=0;
 setInterval(()=>{
@@ -166,7 +62,7 @@ setInterval(()=>{
   slides[i].classList.add("active");
 },4000);
 
-/* REGISTER (CŨ + LOCALSTORAGE) */
+// REGISTER
 function register(){
 
   let u=document.getElementById("user").value.trim();
@@ -192,9 +88,18 @@ function register(){
     return;
   }
 
-  localStorage.setItem("user",u);
-  localStorage.setItem("email",e);
-  localStorage.setItem("pass",p);
+  // ⚡ nâng cấp: lưu nhiều user
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // check trùng username
+  if(users.find(x => x.user === u)){
+    error.innerText="❌ Username đã tồn tại!";
+    error.style.display="block";
+    return;
+  }
+
+  users.push({user:u,email:e,pass:p});
+  localStorage.setItem("users", JSON.stringify(users));
 
   success.style.display="block";
 
@@ -203,7 +108,7 @@ function register(){
   },1000);
 }
 
-/* 🔥 MỚI: NÚT CHUYỂN TRANG */
+// GO LOGIN
 function goLogin(){
   window.location.href="login.html";
 }

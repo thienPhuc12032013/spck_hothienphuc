@@ -3,185 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home</title>
+<title>MySocial Main</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Segoe UI";
-}
-
-body{
-  background:#0f172a;
-  color:white;
-}
-
-/* NAVBAR */
-.navbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 30px;
-  background:#020617;
-  position:sticky;
-  top:0;
-}
-
-.logo{
-  font-size:22px;
-  font-weight:bold;
-  color:#38bdf8;
-}
-
-.user{
-  font-size:14px;
-  color:#aaa;
-}
-
-.logout{
-  background:#ef4444;
-  padding:8px 15px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* CONTAINER */
-.container{
-  width:500px;
-  margin:30px auto;
-}
-
-/* POST BOX */
-.post-box{
-  background:#020617;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:20px;
-}
-
-.post-box textarea{
-  width:100%;
-  height:80px;
-  background:#0f172a;
-  border:none;
-  outline:none;
-  color:white;
-  padding:10px;
-  border-radius:8px;
-  resize:none;
-}
-
-.post-box button{
-  margin-top:10px;
-  padding:8px 15px;
-  background:#38bdf8;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* POST */
-.post{
-  background:#020617;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:15px;
-}
-</style>
-
+<link rel="stylesheet" href="main.css">
 </head>
+
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">MySocial</div>
 
-  <div class="user" id="userBox">User</div>
-
-  <div class="logout" onclick="logout()">Logout</div>
+  <div style="display:flex;gap:10px;">
+    <div class="btn" onclick="goProfile()">Trang cá nhân</div>
+    <div class="btn" onclick="logout()">Logout</div>
+  </div>
 </div>
 
-<!-- MAIN -->
 <div class="container">
 
-  <!-- POST -->
-  <div class="post-box">
-    <textarea id="content" placeholder="Bạn đang nghĩ gì?"></textarea>
-    <button onclick="addPost()">Đăng</button>
-  </div>
+<!-- POST BOX -->
+<div class="post-box">
 
-  <!-- FEED -->
-  <div id="feed"></div>
+<textarea id="content" placeholder="Bạn đang nghĩ gì?"></textarea>
+
+<div class="upload-box">
+
+<label class="upload-btn">
+📷 Ảnh
+<input type="file" id="imageInput" accept="image/*" hidden>
+</label>
+
+<label class="upload-btn">
+🎬 Video
+<input type="file" id="videoInput" accept="video/*" hidden>
+</label>
+
+</div>
+
+<div id="preview"></div>
+
+<button onclick="addPost()">Đăng</button>
+
+</div>
+
+<!-- FEED -->
+<div id="feed"></div>
 
 </div>
 
 <script>
 
-// 🔥 CHECK LOGIN
-if(localStorage.getItem("isLogin") !== "true"){
-  window.location.href = "login.html";
-}
+let currentUser = localStorage.getItem("currentUser") || "Phuc";
+localStorage.setItem("currentUser", currentUser);
 
-// 🔥 HIỂN THỊ USER
-let currentUser = localStorage.getItem("currentUser");
-document.getElementById("userBox").innerText = "Xin chào, " + currentUser;
+let currentIndex = 0;
+let limit = 10;
 
-// 🔥 LOAD POST
-window.onload = function(){
-  loadPosts();
-}
+/* ================= FIX SEED LUÔN CHẠY ================= */
+function seedPosts(){
 
-// 🔥 ADD POST
-function addPost(){
-  let content = document.getElementById("content").value;
+  // ❗ luôn reset để tránh lỗi không hiện
+  let posts = [
 
-  if(content.trim() === ""){
-    alert("Nhập nội dung!");
-    return;
-  }
+    // ===== PHÚC =====
+    {user:"Phúc",text:"🔥 Xin chào mọi người nha",image:"",video:"",comments:[],time:"07:50"},
+    {user:"Phúc",text:"😎 Đang build MySocial App",image:"",video:"",comments:[],time:"08:00"},
+    {user:"Phúc",text:"💬 Ai rảnh chat với mình",image:"",video:"",comments:[],time:"08:05"},
 
-  let posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-  posts.unshift({
-    user: currentUser,
-    text: content
-  });
+    // ===== USER KHÁC =====
+    {user:"Linh",text:"có ai muốn đi chơi ko nè? 😍",image:"",video:"",comments:[],time:"08:10"},
+    {user:"Nam",text:"bận đi học quá 😴",image:"",video:"",comments:[],time:"08:20"},
+    {user:"An",text:"Check in cùng an ko? 📸",image:"https://images.unsplash.com/photo-1509042239860-f550ce710b93",video:"",comments:[],time:"08:30"},
+    {user:"Bảo",text:"đang bận làm bài rồi các friends 💻",image:"",video:"",comments:[],time:"08:40"},
+    {user:"Huy",text:"Nghỉ tay làm vài trận game 😎",image:"",video:"",comments:[],time:"08:50"},
+    {user:"Vy",text:"Hôm nay sinh nhật tôi nhen 🎉",image:"",video:"",comments:[],time:"09:00"},
+    {user:"Trang",text:"Ảnh đẹp ko bây? 📷",image:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",video:"",comments:[],time:"09:10"},
+    {user:"Khoa",text:"JS khó 😵",image:"",video:"",comments:[],time:"09:20"},
+    {user:"Linh",text:"Ăn....... 🍜",image:"",video:"",comments:[],time:"09:30"},
+    {user:"Nam",text:"Done project 🚀",image:"",video:"",comments:[],time:"09:40"}
+  ];
 
   localStorage.setItem("posts", JSON.stringify(posts));
-
-  document.getElementById("content").value = "";
-
-  loadPosts();
 }
 
-// 🔥 LOAD POST
-function loadPosts(){
-  let feed = document.getElementById("feed");
+/* ================= LOAD ================= */
+function loadPosts(reset=true){
+
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
 
-  feed.innerHTML = "";
+  if(reset){
+    feed.innerHTML="";
+    currentIndex=0;
+  }
 
-  posts.forEach(p => {
+  let slice = posts.slice(currentIndex, currentIndex + limit);
+
+  slice.forEach((p,i)=>{
+    let real = currentIndex + i;
+
     feed.innerHTML += `
-      <div class="post">
-        <h4>${p.user}</h4>
-        <p>${p.text}</p>
+    <div class="post">
+
+      <div class="post-header">
+
+        <div class="avatar" onclick="openProfile('${p.user}')">
+          ${p.user[0]}
+        </div>
+
+        <div>
+          <b style="cursor:pointer;color:#ff2d55"
+             onclick="openProfile('${p.user}')">
+            ${p.user}
+          </b>
+          <br>
+          <span class="time">${p.time}</span>
+        </div>
+
       </div>
-    `;
+
+      <p>${p.text}</p>
+
+      ${p.image?`<img src="${p.image}">`:""}
+      ${p.video?`<video controls src="${p.video}"></video>`:""}
+
+    </div>`;
   });
+
+  currentIndex += limit;
+
+  if(currentIndex < posts.length){
+    feed.innerHTML += `<div class="load-more" onclick="loadPosts(false)">Xem thêm</div>`;
+  }
 }
 
-// 🔥 LOGOUT
+/* ================= ADD POST ================= */
+function addPost(){
+
+  let text = content.value;
+  let img = imageInput.files[0];
+  let vid = videoInput.files[0];
+
+  if(!text && !img && !vid) return alert("Nhập nội dung!");
+
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+  function save(image,video){
+    posts.unshift({
+      user: currentUser,
+      text,
+      image,
+      video,
+      comments:[],
+      time:new Date().toLocaleString()
+    });
+
+    localStorage.setItem("posts", JSON.stringify(posts));
+
+    content.value="";
+    preview.innerHTML="";
+    imageInput.value="";
+    videoInput.value="";
+
+    loadPosts(true);
+  }
+
+  if(img){
+    let r = new FileReader();
+    r.onload = e=>save(e.target.result,null);
+    r.readAsDataURL(img);
+  }
+  else if(vid){
+    let r = new FileReader();
+    r.onload = e=>save(null,e.target.result);
+    r.readAsDataURL(vid);
+  }
+  else save(null,null);
+}
+
+/* ================= NAV ================= */
+function openProfile(user){
+  localStorage.setItem("viewUser",user);
+  location.href="profile.html";
+}
+
+function goProfile(){
+  localStorage.setItem("viewUser",currentUser);
+  location.href="profile.html";
+}
+
 function logout(){
-  localStorage.removeItem("isLogin");
   localStorage.removeItem("currentUser");
-
-  window.location.href = "login.html";
+  location.reload();
 }
+
+/* ================= FIX QUAN TRỌNG ================= */
+window.onload = function(){
+  seedPosts();   // luôn reset dữ liệu
+  loadPosts(true);
+};
 
 </script>
 

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Phúc Chat Pro UI Upgrade</title>
+
+<link rel="stylesheet" href="chat.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>💬 Danh sách chat</h3>
+  <div id="userList"></div>
+</div>
+
+<!-- CHAT -->
+<div class="chat">
+
+  <div class="header">
+    <div id="chatName">Chọn người để chat</div>
+    <button onclick="goMain()">🏠 Main</button>
+  </div>
+
+  <div class="messages" id="box"></div>
+
+  <div class="input-box">
+    <input id="msgInput" placeholder="Nhập tin nhắn...">
+    <button onclick="send()">Gửi</button>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+let me = "Phúc";
+let users = ["Linh","Nam","An","Bảo","Huy","Vy","Trang","Khoa"];
+
+let chats = JSON.parse(localStorage.getItem("chatData") || "{}");
+let currentChat = null;
+let selectedIndex = null;
+
+/* DOM */
+let userList = document.getElementById("userList");
+let box = document.getElementById("box");
+let msgInput = document.getElementById("msgInput");
+let chatName = document.getElementById("chatName");
+
+/* USERS */
+function renderUsers(){
+  userList.innerHTML = users.map(u=>`
+    <div class="user" onclick="openChat('${u}')">
+      <div class="avatar">${u[0]}</div>
+      <div>${u}</div>
+    </div>
+  `).join("");
+}
+renderUsers();
+
+/* KEY */
+function key(){
+  return [me,currentChat].sort().join("_");
+}
+
+/* OPEN CHAT */
+function openChat(user){
+  currentChat = user;
+  chatName.innerText = "💬 Phúc ↔ " + user;
+  renderMessages();
+}
+
+/* RENDER MESSAGE (ĐÃ THÊM NÚT ⚙️) */
+function renderMessages(){
+  if(!currentChat) return;
+
+  let k = key();
+  let msgs = chats[k] || [];
+
+  box.innerHTML = msgs.map((m,i)=>`
+    <div class="msg ${m.user===me?"me":"you"}">
+      
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+        
+        <span>${m.text}</span>
+
+        <button onclick="openMenu(${i})" style="
+          background:transparent;
+          border:none;
+          color:#aaa;
+          cursor:pointer;
+          font-size:16px;
+        ">⚙️</button>
+
+      </div>
+
+    </div>
+  `).join("");
+
+  box.scrollTop = box.scrollHeight;
+}
+
+/* SEND */
+function send(){
+  if(!currentChat) return;
+
+  let text = msgInput.value.trim();
+  if(!text) return;
+
+  let k = key();
+  if(!chats[k]) chats[k] = [];
+
+  chats[k].push({
+    user: me,
+    text: text
+  });
+
+  localStorage.setItem("chatData", JSON.stringify(chats));
+
+  msgInput.value="";
+  renderMessages();
+}
+
+/* ===== MESSAGE SETTINGS ===== */
+function openMenu(index){
+  selectedIndex = index;
+
+  let action = prompt("Chọn: \n1 = Sửa\n2 = Xoá");
+
+  let k = key();
+
+  if(action === "1"){
+    let newText = prompt("Nhập nội dung mới:");
+    if(newText){
+      chats[k][selectedIndex].text = newText;
+    }
+  }
+
+  if(action === "2"){
+    chats[k].splice(selectedIndex,1);
+  }
+
+  localStorage.setItem("chatData", JSON.stringify(chats));
+  renderMessages();
+}
+
+/* MAIN */
+function goMain(){
+  location.href="main.html";
+}
+
+/* ENTER */
+msgInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter") send();
+});
+
+</script>
+
+</body>
+</html>

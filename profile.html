@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Pro Max</title>
+<link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- COVER -->
+<div class="cover" onclick="changeCover()">
+  <img id="coverImg">
+  <div class="edit-cover">📷</div>
+</div>
+
+<!-- PROFILE -->
+<div class="profile">
+
+  <div class="avatar" onclick="changeAvatar()">
+    <img id="avatarImg">
+  </div>
+
+  <h2 id="name"></h2>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div><b id="postCount">0</b><span>Bài viết</span></div>
+    <div><b id="followerCount">0</b><span>Followers</span></div>
+    <div><b id="followingCount">0</b><span>Following</span></div>
+  </div>
+
+  <button id="followBtn" onclick="toggleFollow()"></button>
+  <button onclick="goChat()">Nhắn tin</button>
+  <button onclick="goHome()">Trang chủ</button>
+
+</div>
+
+<!-- POSTS -->
+<div id="posts"></div>
+
+</div>
+
+<script>
+
+// ===== USER =====
+let user = localStorage.getItem("viewUser") || localStorage.getItem("currentUser");
+let currentUser = localStorage.getItem("currentUser");
+
+if(!user){
+  alert("Chưa đăng nhập!");
+  location.href="login.html";
+}
+
+// ===== PROFILE =====
+let profiles = JSON.parse(localStorage.getItem("profiles")) || {};
+if(!profiles[user]) profiles[user] = {avatar:"",cover:""};
+
+avatarImg.src = profiles[user].avatar || "https://i.pravatar.cc/100";
+coverImg.src = profiles[user].cover || "";
+name.innerText = user;
+
+// ===== FOLLOW =====
+let follows = JSON.parse(localStorage.getItem("follows")) || {};
+
+if(!follows[user]) follows[user] = {followers:[],following:[]};
+if(!follows[currentUser]) follows[currentUser] = {followers:[],following:[]};
+
+// ===== FOLLOW BTN =====
+function updateFollowBtn(){
+  if(user === currentUser){
+    followBtn.style.display="none";
+    return;
+  }
+  let isFollow = follows[user].followers.includes(currentUser);
+  followBtn.innerText = isFollow ? "Đang theo dõi" : "Theo dõi";
+}
+updateFollowBtn();
+
+function toggleFollow(){
+  let isFollow = follows[user].followers.includes(currentUser);
+
+  if(isFollow){
+    follows[user].followers = follows[user].followers.filter(u=>u!==currentUser);
+    follows[currentUser].following = follows[currentUser].following.filter(u=>u!==user);
+  }else{
+    follows[user].followers.push(currentUser);
+    follows[currentUser].following.push(user);
+  }
+
+  localStorage.setItem("follows",JSON.stringify(follows));
+  updateFollowBtn();
+  updateStats();
+}
+
+// ===== CHANGE AVATAR =====
+function changeAvatar(){
+  if(user !== currentUser) return;
+
+  let input = document.createElement("input");
+  input.type="file";
+  input.accept="image/*";
+
+  input.onchange = e=>{
+    let reader = new FileReader();
+    reader.onload = ev=>{
+      profiles[user].avatar = ev.target.result;
+      localStorage.setItem("profiles",JSON.stringify(profiles));
+      avatarImg.src = ev.target.result;
+    }
+    reader.readAsDataURL(e.target.files[0]);
+  }
+  input.click();
+}
+
+// ===== CHANGE COVER =====
+function changeCover(){
+  if(user !== currentUser) return;
+
+  let input = document.createElement("input");
+  input.type="file";
+  input.accept="image/*";
+
+  input.onchange = e=>{
+    let reader = new FileReader();
+    reader.onload = ev=>{
+      profiles[user].cover = ev.target.result;
+      localStorage.setItem("profiles",JSON.stringify(profiles));
+      coverImg.src = ev.target.result;
+    }
+    reader.readAsDataURL(e.target.files[0]);
+  }
+  input.click();
+}
+
+// ===== POSTS =====
+let allPosts = JSON.parse(localStorage.getItem("posts")) || [];
+
+let userPosts = allPosts
+  .map((p,index)=>({...p,index}))
+  .filter(p => p.user === user);
+
+// ===== RENDER =====
+function render(){
+  posts.innerHTML = userPosts.map(p=>`
+    <div class="post">
+      <p>${p.text||""}</p>
+
+      ${p.image?`<img src="${p.image}">`:""}
+      ${p.video?`<video autoplay muted loop src="${p.video}"></video>`:""}
+
+      <div class="actions">
+        <div class="like-btn" onclick="like(${p.index},event)">
+          ❤️ ${p.likes||0}
+        </div>
+      </div>
+
+      ${(p.comments||[]).map(c=>`
+        <div class="comment"><b>${c.user}:</b> ${c.text}</div>
+      `).join("")}
+
+      <div class="comment-box">
+        <input id="cmt-${p.index}">
+        <button onclick="addCmt(${p.index})">Gửi</button>
+      </div>
+    </div>
+  `).join("");
+
+  updateStats();
+}
+
+render();
+
+// ===== STATS =====
+function updateStats(){
+  postCount.innerText = userPosts.length;
+  followerCount.innerText = follows[user].followers.length;
+  followingCount.innerText = follows[user].following.length;
+}
+
+// ===== LIKE =====
+function like(i,e){
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  posts[i].likes = (posts[i].likes||0)+1;
+  localStorage.setItem("posts",JSON.stringify(posts));
+  location.reload();
+}
+
+// ===== COMMENT =====
+function addCmt(i){
+  let input = document.getElementById("cmt-"+i);
+  if(!input.value) return;
+
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  if(!posts[i].comments) posts[i].comments = [];
+
+  posts[i].comments.push({
+    user:currentUser,
+    text:input.value
+  });
+
+  localStorage.setItem("posts",JSON.stringify(posts));
+  location.reload();
+}
+
+// ===== CHAT =====
+function goChat(){
+  localStorage.setItem("chatWith", user);
+  location.href="chat.html";
+}
+
+// ===== NAV =====
+function goHome(){
+  location.href="main.html";
+}
+
+</script>
+
+</body>
+</html>
