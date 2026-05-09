@@ -1,0 +1,120 @@
+<!-- setting.html -->
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setting</title>
+
+<link rel="stylesheet" href="setting.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="title">
+<h1>⚙️ Cài đặt</h1>
+<p>Quản lý tài khoản và ứng dụng</p>
+</div>
+
+<div class="profile">
+<img src="https://i.pravatar.cc/150?img=12">
+
+<div class="profile-info">
+<h3>Thiên Phúc</h3>
+<span>@mysocial_user</span>
+</div>
+</div>
+
+<div class="setting-item" onclick="goPage('account.html')">
+
+<div class="left">
+<i class="fa-solid fa-user"></i>
+<span>Tài khoản</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="setting-item" onclick="goPage('notify.html')">
+
+<div class="left">
+<i class="fa-solid fa-bell"></i>
+<span>Thông báo</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="setting-item" onclick="goPage('theme.html')">
+
+<div class="left">
+<i class="fa-solid fa-moon"></i>
+<span>Giao diện tối</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="setting-item" onclick="goPage('security.html')">
+
+<div class="left">
+<i class="fa-solid fa-lock"></i>
+<span>Bảo mật</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="setting-item" onclick="goPage('chat.html')">
+
+<div class="left">
+<i class="fa-solid fa-comments"></i>
+<span>Chat</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="setting-item" onclick="goPage('login.html')">
+
+<div class="left">
+<i class="fa-solid fa-right-from-bracket"></i>
+<span>Đăng xuất</span>
+</div>
+
+<i class="fa-solid fa-chevron-right"></i>
+
+</div>
+
+<div class="back" onclick="goBack()">
+⬅ Quay lại trang chính
+</div>
+
+</div>
+
+<script>
+
+function goBack(){
+location.href="main.html";
+}
+
+function goPage(page){
+location.href=page;
+}
+
+</script>
+
+</body>
+</html>

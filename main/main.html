@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySocial Main</title>
+
+<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+<div class="navbar">
+
+  <div class="logo">MySocial</div>
+
+  <div style="display:flex;gap:10px;">
+
+    <div class="btn" onclick="goProfile()">
+      Trang cá nhân
+    </div>
+
+    <div class="btn" onclick="goSetting()">
+      ⚙️ Setting
+    </div>
+
+    <div class="btn" onclick="logout()">
+      Logout
+    </div>
+
+  </div>
+
+</div>
+
+<div class="container">
+
+<!-- POST BOX -->
+<div class="post-box">
+
+<textarea id="content" placeholder="Bạn đang nghĩ gì?"></textarea>
+
+<div class="upload-box">
+
+<label class="upload-btn">
+📷 Ảnh
+<input type="file" id="imageInput" accept="image/*" hidden>
+</label>
+
+<label class="upload-btn">
+🎬 Video
+<input type="file" id="videoInput" accept="video/*" hidden>
+</label>
+
+</div>
+
+<div id="preview"></div>
+
+<button onclick="addPost()">Đăng</button>
+
+</div>
+
+<!-- FEED -->
+<div id="feed"></div>
+
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html> 

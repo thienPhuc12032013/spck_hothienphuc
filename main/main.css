@@ -11,6 +11,7 @@ body{
 }
 
 /* NAV */
+
 .navbar{
   display:flex;
   justify-content:space-between;
@@ -32,12 +33,14 @@ body{
 }
 
 /* CONTAINER */
+
 .container{
   width:500px;
   margin:20px auto;
 }
 
 /* POST BOX */
+
 .post-box{
   background:#141414;
   padding:15px;
@@ -55,6 +58,7 @@ textarea{
 }
 
 /* upload */
+
 .upload-box{
   display:flex;
   gap:10px;
@@ -70,7 +74,8 @@ textarea{
   cursor:pointer;
 }
 
-/* NÚT ĐĂNG ĐẸP */
+/* NÚT ĐĂNG */
+
 button{
   width:100%;
   margin-top:10px;
@@ -84,6 +89,7 @@ button{
 }
 
 /* POST */
+
 .post{
   background:#141414;
   padding:15px;
@@ -107,9 +113,11 @@ button{
   justify-content:center;
 }
 
-/* FIX ẢNH */
+/* IMAGE + VIDEO */
+
 .post img,
-.post video{
+.post video,
+.preview-media{
   width:100%;
   max-height:350px;
   object-fit:cover;
@@ -118,6 +126,7 @@ button{
 }
 
 /* CHAT */
+
 .chat-box{
   display:flex;
   gap:5px;
